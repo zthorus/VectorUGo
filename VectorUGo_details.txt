@@ -21,6 +21,7 @@ consists of the following files:
 * RAM_vec.*           : RAM (IP core) containing the vectors to display.
 * ROM_landscape.*     : ROM (IP core) containing the landscape (mountains,
                         missiles, fuel tanks) of the Scramble game.
+* landscape.mif       : definition of the landscape (= content of the ROM).
 
 
 External hardware
@@ -48,7 +49,7 @@ it as follows: when the img_trim input is grounded (by a switch), the
 game is frozen and all the vectors of the current frame (even the normally
 hidden vectors for sprite positionning and spot homing) are displayed. The
 user can then use the joystick to adjust the image in x and y (i.e. adjusting
-the digital values corresponding to DAC_output = V_ref) until it
+the digital values corresponding to DAC_output = V_ref = 2.5 V) until it
 looks "correct". By toggling back the img_trim switch, the game resumes. 
 
 A schematic of the external hardware is provided by the file:
@@ -65,7 +66,7 @@ be OK. I used a 50-MHz Philips PM3215.
 Scramble game (caveat)
 ======================
 
-This game is mostly a demonstration. I didn't want to optimize it. There is
+This game is mostly a demonstration. I didn't bother to optimize it. There is
 no score display, only a fuel gauge at the bottom (fuel tanks have to bombed or
 shot for refilling). 
 
