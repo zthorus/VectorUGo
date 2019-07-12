@@ -1,0 +1,71 @@
+VectorUGo notes
+===============
+
+S. Morel, 2019-07-11
+
+FPGA implementation
+===================
+
+VectorUGo is based on a Kamami Maximator MAX10 FPGA board. This board features
+an Arduino compatible I/O port that is used as external interface towards
+the VectorUGo electronics. It also has a 10-MHz clock (on the L3 pin) which is
+used by the firmware. The firmware (written in VHDL with Intel Quartus Prime)
+consists of the following files:
+
+* vector_console.qpf  : Intel Quartus Prime project file.
+* vector_console.vhd  : top-level entity (general circuit).
+* vector_display.vhd  : real-time display of the vectors as read from RAM.
+* mcp4821_drv.vhd     : driver for the MCP4821 DACs.
+* game1.vhd           : game program (Scramble).
+* sound_generator.vhd : generator of sound effects for the game.
+* RAM_vec.*           : RAM (IP core) containing the vectors to display.
+* ROM_landscape.*     : ROM (IP core) containing the landscape (mountains,
+                        missiles, fuel tanks) of the Scramble game.
+
+
+External hardware
+=================
+
+The Maximator board (Arduino I/O ports) has to be wired to the following
+components:
+
+* An MCP4821 DAC to transform the x-component of the current vector into analog
+  signal.
+* Another MCP4821 for the y-component.
+* An interface to the TTL z-axis input of the oscilloscope.
+* An OPA2604 dual op-amp wired as a dual integrator to transform the x and
+  y analog output of the DACs into ramps (which are displayed by the
+  oscilloscope in XY mode).
+* An Atari-compatible joystick (4 directions + fire button).
+* A switch for the image-trimming mode. 
+* An audio amplifier.
+
+One issue is the calibration of the value corresponding to "zero-integration",
+when the voltage at the inverting input of an op-amp is equal to the voltage
+at its non-inverting input (which is set to 2.5 V for x and y by an LM385-2.5
+reference voltage source to be wired). The code in game1.vhd takes care of 
+it as follows: when the img_trim input is grounded (by a switch), the
+game is frozen and all the vectors of the current frame (even the normally
+hidden vectors for sprite positionning and spot homing) are displayed. The
+user can then use the joystick to adjust the image in x and y (i.e. adjusting
+the digital values corresponding to DAC_output = V_ref) until it
+looks "correct". By toggling back the img_trim switch, the game resumes. 
+
+A schematic of the external hardware is provided by the file:
+* VectorUGo_main_board_sch.pdf
+
+
+Display
+=======
+
+Any dual-trace analog oscilloscope with an XY mode and a TTL z-axis should
+be OK. I used a 50-MHz Philips PM3215.    
+
+
+Scramble game (caveat)
+======================
+
+This game is mostly a demonstration. I didn't want to optimize it. There is
+no score display, only a fuel gauge at the bottom (fuel tanks have to bombed or
+shot for refilling). 
+
